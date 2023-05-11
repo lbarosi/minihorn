@@ -1,0 +1,6 @@
+/data/*
+data/*
+data/raw/*
+*.pyc
+notebooks/.ipynb_checkpoints/*
+notebooks/de440.bsp
