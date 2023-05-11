@@ -55,21 +55,21 @@ def baseline_subtract(data, baseline, window_length=71):
     result = (data - baseline)
     return result, baseline
 
-def plot_baseline(baseline, data, ax=None):
+def plot_baseline(baseline, data, ax=None, label=None):
     if ax is None:
         fig, ax = plt.subplots(figsize=(12,4))
-    ax.plot(data.data.columns, baseline)
+    ax.plot(data.data.columns, baseline, label=label)
     ax.set_xlabel("MHz")
     ax.set_ylabel("dB")
     ax.grid()
     return ax
     
-def plot_median(data, threshold=None, distance=None, width=None, ax = None):
+def plot_median(data, threshold=None, distance=None, width=None, ax = None, label=None):
     if ax is None:
         fig, ax = plt.subplots(figsize=(12,4))
     median = data.median().values
     freqs = data.columns
-    ax.plot(freqs, median)
+    ax.plot(freqs, median, label=label)
     peaks, _ = scipy.signal.find_peaks(median, threshold=threshold, width=width, distance=distance)
     ax.scatter(freqs[peaks], 1.01 * median[peaks], color="red", marker="x")
     for peak in peaks:
@@ -106,3 +106,14 @@ def gal2altaz(LAT, LON, TIME=None):
     gal_obj = SkyCoord(LON, LAT, unit=u.deg, frame="galactic")
     altaz = gal_obj.transform_to(AltAz(obstime=tt, location=antenna))
     return np.round(altaz.alt.degree, 1), np.round(altaz.az.degree, 1)
+
+
+def normalize(data):
+    if isinstance(data, pd.DataFrame):
+        mmax = data.values.max()
+        mmin = data.values.min()
+    else:
+        mmax = data.max()
+        mmin = data.min()
+    result = (data - mmin)/mmax
+    return result
